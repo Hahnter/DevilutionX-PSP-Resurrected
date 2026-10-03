@@ -224,10 +224,11 @@ void LoadOptions()
 
 #ifdef PSP
 	// Migrate the legacy uppercase Hellfire mod key used by older PSP builds.
-	// Keep the existing state if the canonical lowercase key is not present.
-	if (!ini->get("Mods", "HF").empty()) {
-		if (ini->get("Mods", "hf").empty())
+	const std::vector<std::string> modKeys = ini->getKeys("Mods");
+	if (std::find(modKeys.begin(), modKeys.end(), "HF") != modKeys.end()) {
+		if (std::find(modKeys.begin(), modKeys.end(), "hf") == modKeys.end())
 			ini->set("Mods", "hf", ini->getBool("Mods", "HF", false));
+
 		ini->set("Mods", "HF", Ini::Values {});
 		SaveIni();
 	}
