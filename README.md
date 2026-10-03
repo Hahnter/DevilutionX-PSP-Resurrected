@@ -26,11 +26,13 @@ Supply your own game data in that same `DevilutionX` folder:
 - **Hellfire:** `DIABDAT.MPQ`, `hellfire.mpq`, `hfmonk.mpq`, `hfmusic.mpq`, and
   `hfvoice.mpq`. Enable the single `Hellfire` entry under **Mods** in the game.
 - **Shareware:** use `spawn.mpq` extracted from Blizzard's original
-  `diablosw.exe` instead of the retail MPQs. The archive verified on a PSP-3000
+  [`diablosw.exe`](http://ftp.blizzard.com/pub/demos/diablosw.exe) instead of
+  the retail MPQs. The archive verified on a PSP-3000
   is 50,274,091 bytes, SHA-256
   `ea7de65bd1f12f1d04561c62a68f80eb36341e224974e1d93931fe82dc814e75`.
-  The 25,448,219-byte `spawn.mpq` linked in the general installation instructions
-  below repeatedly failed in this port's PSP hardware tests.
+  The 25,448,219-byte `spawn.mpq` from the [DevilutionX assets download](https://github.com/diasurgical/devilutionx-assets/releases/latest/download/spawn.mpq)
+  (SHA-256 `64427cd7c1ba904eaa2e0031c16a6b136d0ecef9abc888c5ff8344b459356e38`)
+  repeatedly failed in this port's PSP hardware tests.
 
 Game MPQs are **not included** in the PSP download. Keep `assets/` and `mods/hf/`
 from the release. The PSP graphics menu offers **640×480 (4:3)** and

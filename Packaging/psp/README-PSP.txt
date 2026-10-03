@@ -18,13 +18,17 @@ Supply your own game data in the same folder as EBOOT.PBP:
   Hellfire:  DIABDAT.MPQ, hellfire.mpq, hfmonk.mpq, hfmusic.mpq, hfvoice.mpq
   Shareware: spawn.mpq extracted from Blizzard's original diablosw.exe
 
+Original Blizzard installer source: http://ftp.blizzard.com/pub/demos/diablosw.exe
+
 For Hellfire, enable the single Hellfire entry under Mods in the game.
 For a shareware-only install, leave out DIABDAT.MPQ and the Hellfire MPQs.
 The known-good original spawn.mpq tested on a PSP-3000 is 50,274,091 bytes
 and has SHA-256:
 ea7de65bd1f12f1d04561c62a68f80eb36341e224974e1d93931fe82dc814e75
-The 25,448,219-byte public spawn.mpq linked in generic DevilutionX install
-instructions repeatedly failed in this PSP port's hardware tests.
+The 25,448,219-byte spawn.mpq from the DevilutionX assets download at
+https://github.com/diasurgical/devilutionx-assets/releases/latest/download/spawn.mpq
+has SHA-256 64427cd7c1ba904eaa2e0031c16a6b136d0ecef9abc888c5ff8344b459356e38
+and repeatedly failed in this PSP port's hardware tests.
 
 No Diablo, Hellfire, or shareware MPQ data is included in this download.
 
