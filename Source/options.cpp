@@ -69,6 +69,15 @@ namespace devilution {
 
 namespace {
 
+#ifdef PSP
+// The PSP file system may report the packaged `hf` directory in uppercase.
+// Both spellings represent the same built-in Hellfire mod.
+bool IsHellfireModName(std::string_view name)
+{
+	return name.size() == 2 && (name[0] == 'h' || name[0] == 'H') && (name[1] == 'f' || name[1] == 'F');
+}
+#endif
+
 void DiscoverMods()
 {
 	// Add mods available by default:
@@ -88,7 +97,11 @@ void DiscoverMods()
 			if (!FileExists(modScriptPath.c_str()))
 				continue;
 
+#ifdef PSP
+			modNames.insert(IsHellfireModName(modFolder) ? "hf" : modFolder);
+#else
 			modNames.insert(modFolder);
+#endif
 		}
 
 		// Find packed mods
@@ -96,7 +109,12 @@ void DiscoverMods()
 			if (!modMpq.ends_with(".mpq"))
 				continue;
 
-			modNames.insert(modMpq.substr(0, modMpq.size() - 4));
+			const std::string modName = modMpq.substr(0, modMpq.size() - 4);
+#ifdef PSP
+			modNames.insert(IsHellfireModName(modName) ? "hf" : modName);
+#else
+			modNames.insert(modName);
+#endif
 		}
 	}
 
@@ -223,13 +241,19 @@ void LoadOptions()
 	LoadIni();
 
 #ifdef PSP
-	// Migrate the legacy uppercase Hellfire mod key used by older PSP builds.
+	// Merge legacy case variants without losing an enabled Hellfire setting.
 	const std::vector<std::string> modKeys = ini->getKeys("Mods");
-	if (std::find(modKeys.begin(), modKeys.end(), "HF") != modKeys.end()) {
-		if (std::find(modKeys.begin(), modKeys.end(), "hf") == modKeys.end())
-			ini->set("Mods", "hf", ini->getBool("Mods", "HF", false));
-
-		ini->set("Mods", "HF", Ini::Values {});
+	bool hellfireEnabled = ini->getBool("Mods", "hf", false);
+	bool hasAlias = false;
+	for (const std::string &modKey : modKeys) {
+		if (modKey == "hf" || !IsHellfireModName(modKey))
+			continue;
+		hellfireEnabled |= ini->getBool("Mods", modKey, false);
+		ini->set("Mods", modKey, Ini::Values {});
+		hasAlias = true;
+	}
+	if (hasAlias) {
+		ini->set("Mods", "hf", hellfireEnabled);
 		SaveIni();
 	}
 #endif
