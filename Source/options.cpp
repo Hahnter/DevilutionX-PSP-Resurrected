@@ -221,6 +221,18 @@ bool HardwareCursorSupported()
 void LoadOptions()
 {
 	LoadIni();
+
+#ifdef PSP
+	// Migrate the legacy uppercase Hellfire mod key used by older PSP builds.
+	// Keep the existing state if the canonical lowercase key is not present.
+	if (!ini->get("Mods", "HF").empty()) {
+		if (ini->get("Mods", "hf").empty())
+			ini->set("Mods", "hf", ini->getBool("Mods", "HF", false));
+		ini->set("Mods", "HF", Ini::Values {});
+		SaveIni();
+	}
+#endif
+
 	DiscoverMods();
 	Options &options = GetOptions();
 	for (OptionCategoryBase *pCategory : options.GetCategories()) {
