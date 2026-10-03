@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - upstream-psp
+      - psp-widescreen-profile
     paths-ignore:
       - '*.md'
       - 'docs/**'

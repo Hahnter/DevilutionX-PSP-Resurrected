@@ -48,6 +48,35 @@ SDL_Renderer *renderer;
 SDLTextureUniquePtr texture;
 #ifdef PSP
 SDLTextureUniquePtr PspRightTexture;
+
+namespace {
+struct PspFrameProfile {
+	uint64_t draw = 0;
+	uint64_t blit = 0;
+	uint64_t clear = 0;
+	uint64_t upload = 0;
+	uint64_t copy = 0;
+	uint64_t present = 0;
+	uint64_t frame = 0;
+	uint64_t lastFrameEnd = 0;
+	uint64_t pendingDraw = 0;
+	uint64_t pendingBlit = 0;
+	int samples = 0;
+	int intervals = 0;
+	int width = 0;
+};
+PspFrameProfile PspProfile;
+} // namespace
+
+void PspProfileRecordDraw(uint64_t ticks)
+{
+	PspProfile.pendingDraw += ticks;
+}
+
+void PspProfileRecordBlit(uint64_t ticks)
+{
+	PspProfile.pendingBlit += ticks;
+}
 #endif
 #endif
 
@@ -202,7 +231,13 @@ void BltFast(SDL_Rect *srcRect, SDL_Rect *dstRect)
 #endif
 		return;
 	}
+#if defined(PSP) && !defined(USE_SDL1)
+	const uint64_t pspBlitStart = SDL_GetPerformanceCounter();
+#endif
 	Blit(PalSurface, srcRect, dstRect);
+#if defined(PSP) && !defined(USE_SDL1)
+	PspProfileRecordBlit(SDL_GetPerformanceCounter() - pspBlitStart);
+#endif
 }
 
 void Blit(SDL_Surface *src, SDL_Rect *srcRect, SDL_Rect *dstRect)
@@ -321,9 +356,13 @@ void RenderPresent()
 		if (!SDL_UpdateTexture(texture.get(), nullptr, surface->pixels, surface->pitch)) ErrSdl();
 		if (!SDL_RenderTexture(renderer, texture.get(), nullptr, nullptr)) ErrSdl();
 #else
+#ifdef PSP
+		const uint64_t pspClearStart = SDL_GetPerformanceCounter();
+#endif
 		if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255) <= -1) ErrSdl();
 		if (SDL_RenderClear(renderer) <= -1) ErrSdl();
 #ifdef PSP
+		const uint64_t pspUploadStart = SDL_GetPerformanceCounter();
 		const auto *pixels = static_cast<const std::uint8_t *>(surface->pixels);
 		const int firstTextureWidth = std::min<int>(gnScreenWidth, PspFirstTextureWidth);
 		const auto *rightPixels = pixels + firstTextureWidth * surface->format->BytesPerPixel;
@@ -331,10 +370,12 @@ void RenderPresent()
 		if (SDL_UpdateTexture(texture.get(), nullptr, pixels, surface->pitch) <= -1)
 			ErrSdl();
 
+		uint64_t pspCopyStart;
 		if (PspRightTexture != nullptr) {
 			if (SDL_UpdateTexture(PspRightTexture.get(), nullptr, rightPixels, surface->pitch) <= -1)
 				ErrSdl();
 
+			pspCopyStart = SDL_GetPerformanceCounter();
 			// PSPDEV's SDL2 PSP renderer ignores the logical viewport offset when
 			// drawing textures. Apply it here so the image is positioned correctly.
 			SDL_Rect viewport;
@@ -347,9 +388,11 @@ void RenderPresent()
 			    || SDL_RenderCopy(renderer, PspRightTexture.get(), nullptr, &rightRect) <= -1)
 				ErrSdl();
 		} else {
+			pspCopyStart = SDL_GetPerformanceCounter();
 			if (SDL_RenderCopy(renderer, texture.get(), nullptr, nullptr) <= -1)
 				ErrSdl();
 		}
+		const uint64_t pspPresentStart = SDL_GetPerformanceCounter();
 #else
 		if (SDL_UpdateTexture(texture.get(), nullptr, surface->pixels, surface->pitch) <= -1) ErrSdl();
 		if (SDL_RenderCopy(renderer, texture.get(), nullptr, nullptr) <= -1) ErrSdl();
@@ -360,6 +403,49 @@ void RenderPresent()
 			RenderVirtualGamepad(renderer);
 		}
 		SDL_RenderPresent(renderer);
+#ifdef PSP
+		const uint64_t pspFrameEnd = SDL_GetPerformanceCounter();
+		if (PspProfile.pendingDraw != 0) {
+			if (PspProfile.width != gnScreenWidth) {
+				const uint64_t pendingDraw = PspProfile.pendingDraw;
+				const uint64_t pendingBlit = PspProfile.pendingBlit;
+				PspProfile = {};
+				PspProfile.pendingDraw = pendingDraw;
+				PspProfile.pendingBlit = pendingBlit;
+			}
+			PspProfile.width = gnScreenWidth;
+			PspProfile.draw += PspProfile.pendingDraw;
+			PspProfile.blit += PspProfile.pendingBlit;
+			PspProfile.clear += pspUploadStart - pspClearStart;
+			PspProfile.upload += pspCopyStart - pspUploadStart;
+			PspProfile.copy += pspPresentStart - pspCopyStart;
+			PspProfile.present += pspFrameEnd - pspPresentStart;
+			if (PspProfile.lastFrameEnd != 0) {
+				PspProfile.frame += pspFrameEnd - PspProfile.lastFrameEnd;
+				++PspProfile.intervals;
+			}
+			PspProfile.lastFrameEnd = pspFrameEnd;
+			++PspProfile.samples;
+			if (PspProfile.samples == 120) {
+				const double frequency = static_cast<double>(SDL_GetPerformanceFrequency());
+				const auto milliseconds = [frequency](uint64_t ticks, int count) {
+					return count == 0 ? 0.0 : 1000.0 * static_cast<double>(ticks) / frequency / count;
+				};
+				Log("PSP PERF {}x{}: frame={:.1f} draw={:.1f} blit={:.1f} clear={:.1f} upload={:.1f} copy={:.1f} present={:.1f} ms ({} frames)",
+				    gnScreenWidth, gnScreenHeight, milliseconds(PspProfile.frame, PspProfile.intervals),
+				    milliseconds(PspProfile.draw, PspProfile.samples), milliseconds(PspProfile.blit, PspProfile.samples),
+				    milliseconds(PspProfile.clear, PspProfile.samples), milliseconds(PspProfile.upload, PspProfile.samples),
+				    milliseconds(PspProfile.copy, PspProfile.samples), milliseconds(PspProfile.present, PspProfile.samples), PspProfile.samples);
+				PspProfile = {};
+				PspProfile.width = gnScreenWidth;
+				// Exclude the SD-card log write from the next frame interval.
+			}
+		} else {
+			PspProfile = {};
+		}
+		PspProfile.pendingDraw = 0;
+		PspProfile.pendingBlit = 0;
+#endif
 
 #ifdef __EMSCRIPTEN__
 		// TODO: Refactor to use emscripten_set_main_loop or requestAnimationFrame instead.

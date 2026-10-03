@@ -1816,6 +1816,9 @@ void scrollrt_draw_game_screen()
 	if (HeadlessMode)
 		return;
 
+#if defined(PSP) && !defined(USE_SDL1)
+	const uint64_t pspDrawStart = SDL_GetPerformanceCounter();
+#endif
 	int hgt = 0;
 
 	if (IsRedrawEverything()) {
@@ -1828,6 +1831,9 @@ void scrollrt_draw_game_screen()
 	DrawCursor(out);
 	DrawMain(hgt, false, false, false, false, false);
 
+#if defined(PSP) && !defined(USE_SDL1)
+	PspProfileRecordDraw(SDL_GetPerformanceCounter() - pspDrawStart);
+#endif
 	RenderPresent();
 }
 
@@ -1837,6 +1843,9 @@ void DrawAndBlit()
 		return;
 	}
 
+#if defined(PSP) && !defined(USE_SDL1)
+	const uint64_t pspDrawStart = SDL_GetPerformanceCounter();
+#endif
 	int hgt = 0;
 	bool drawHealth = IsRedrawComponent(PanelDrawComponent::Health);
 	bool drawMana = IsRedrawComponent(PanelDrawComponent::Mana);
@@ -1922,6 +1931,9 @@ void DrawAndBlit()
 		}
 	}
 
+#if defined(PSP) && !defined(USE_SDL1)
+	PspProfileRecordDraw(SDL_GetPerformanceCounter() - pspDrawStart);
+#endif
 	RenderPresent();
 }
 
