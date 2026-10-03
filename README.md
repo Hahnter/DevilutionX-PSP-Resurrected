@@ -2,6 +2,43 @@
   <img width="560" height="144" alt="image" src="https://github.com/user-attachments/assets/7ac73801-ef7b-4cc1-8442-a191a2a0a1ce" />
 </p>
 
+## PSP port (`upstream-psp`)
+
+This branch ports current DevilutionX to the PlayStation Portable. Download the
+[latest PSP release](https://github.com/Hahnter/DevilutionX-PSP-Resurrected/releases/latest)
+for a ready-to-copy package. The older `psp-enhanced` releases are from a separate
+branch; use the latest release for this branch.
+
+Extract the release ZIP so that the following files are directly inside
+`PSP/GAME/DevilutionX/` on the Memory Stick:
+
+```text
+PSP/GAME/DevilutionX/
+├── EBOOT.PBP
+├── assets/
+└── mods/
+    └── hf/
+```
+
+Supply your own game data in that same `DevilutionX` folder:
+
+- **Diablo:** `DIABDAT.MPQ` from your Diablo installation.
+- **Hellfire:** `DIABDAT.MPQ`, `hellfire.mpq`, `hfmonk.mpq`, `hfmusic.mpq`, and
+  `hfvoice.mpq`. Enable the single `Hellfire` entry under **Mods** in the game.
+- **Shareware:** use `spawn.mpq` extracted from Blizzard's original
+  `diablosw.exe` instead of the retail MPQs. The archive verified on a PSP-3000
+  is 50,274,091 bytes, SHA-256
+  `ea7de65bd1f12f1d04561c62a68f80eb36341e224974e1d93931fe82dc814e75`.
+  The 25,448,219-byte `spawn.mpq` linked in the general installation instructions
+  below repeatedly failed in this port's PSP hardware tests.
+
+Game MPQs are **not included** in the PSP download. Keep `assets/` and `mods/hf/`
+from the release. The PSP graphics menu offers **640×480 (4:3)** and
+**848×480 (Widescreen)** logical resolutions; widescreen shows a wider game
+view and is presented on the PSP's 480×272 screen without stretching a 4:3
+frame. Retail Diablo, Hellfire, and the original Blizzard shareware archive
+have been tested on a PSP-3000. Performance depends on the scene and settings.
+
 ---
 
 [![Discord Channel](https://img.shields.io/discord/518540764754608128?color=%237289DA&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/devilutionx-518540764754608128)
