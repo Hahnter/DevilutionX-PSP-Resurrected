@@ -432,12 +432,7 @@ std::string_view OptionCategoryBase::GetDescription() const
 
 GameModeOptions::GameModeOptions()
     : OptionCategoryBase("GameMode", N_("Game Mode"), N_("Game Mode Settings"))
-    , gameMode("Game",
-#ifdef PSP
-          OptionEntryFlags::CantChangeInGame | OptionEntryFlags::RecreateUI,
-#else
-          OptionEntryFlags::Invisible,
-#endif
+    , gameMode("Game", OptionEntryFlags::Invisible,
           N_("Game Mode"), N_("Play Diablo or Hellfire."), StartUpGameMode::Ask,
           {
               { StartUpGameMode::Diablo, N_("Diablo") },
@@ -1629,10 +1624,6 @@ std::vector<OptionEntryBase *> ModOptions::GetEntries()
 {
 	std::vector<OptionEntryBase *> optionEntries;
 	for (auto &modEntry : GetModEntries()) {
-#ifdef PSP
-		if (modEntry.name == "hf")
-			continue;
-#endif
 		optionEntries.emplace_back(&modEntry.enabled);
 	}
 	return optionEntries;
