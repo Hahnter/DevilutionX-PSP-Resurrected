@@ -32,7 +32,12 @@ Supply your own game data in that same `DevilutionX` folder:
   `ea7de65bd1f12f1d04561c62a68f80eb36341e224974e1d93931fe82dc814e75`.
   The 25,448,219-byte `spawn.mpq` from the [DevilutionX assets download](https://github.com/diasurgical/devilutionx-assets/releases/latest/download/spawn.mpq)
   (SHA-256 `64427cd7c1ba904eaa2e0031c16a6b136d0ecef9abc888c5ff8344b459356e38`)
-  repeatedly failed in this port's PSP hardware tests.
+  contains MP3 audio and does not currently work with this PSP build on a
+  PSP-3000. A controlled test using the same game data and MPQ layout ran with
+  WAV audio but powered off the PSP when the audio was replaced with MP3.
+  This points to a compatibility issue in the PSP port's MP3 audio path, **not
+  evidence that the official DevilutionX download is damaged**. Other
+  DevilutionX platforms may use that download normally.
 
 Game MPQs are **not included** in the PSP download. Keep `assets/` and `mods/hf/`
 from the release. The PSP graphics menu offers **640×480 (4:3)** and
@@ -63,7 +68,7 @@ For a full list of changes, see our [changelog](docs/CHANGELOG.md).
 
 # How to Install
 
-Note: You'll need access to the data from the original game. If you don't have an original CD, you can [buy Diablo from GoG.com](https://www.gog.com/game/diablo) or Battle.net. Alternatively, you can use `spawn.mpq` from the [shareware](https://github.com/diasurgical/devilutionx-assets/releases/latest/download/spawn.mpq) [[2]](http://ftp.blizzard.com/pub/demos/diablosw.exe) version, in place of `DIABDAT.MPQ`, to play the shareware portion of the game.
+Note: You'll need access to the data from the original game. If you don't have an original CD, you can [buy Diablo from GoG.com](https://www.gog.com/game/diablo) or Battle.net. Alternatively, you can use `spawn.mpq` from the [shareware](https://github.com/diasurgical/devilutionx-assets/releases/latest/download/spawn.mpq) [[2]](http://ftp.blizzard.com/pub/demos/diablosw.exe) version, in place of `DIABDAT.MPQ`, to play the shareware portion of the game. For this PSP build, follow the WAV-archive guidance in the PSP section above.
 
 Download the latest [DevilutionX release](https://github.com/diasurgical/devilutionX/releases/latest) and extract the contents to a location of your choosing or [build from source](#building-from-source).
 
