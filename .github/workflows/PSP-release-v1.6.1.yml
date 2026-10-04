@@ -1,0 +1,36 @@
+name: Publish PSP v1.6.1
+
+on:
+  push:
+    tags:
+      - v1.6.1-psp
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout release documentation
+        uses: actions/checkout@v4
+
+      - name: Download normal PSP build 56
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download 37147919542 --repo "$GITHUB_REPOSITORY" --name devilutionx-psp --dir artifact
+
+      - name: Package and verify PSP download
+        run: python3 Packaging/psp/package_release.py artifact devilutionx-psp-v1.6.1.zip
+
+      - name: Publish latest PSP release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create v1.6.1-psp devilutionx-psp-v1.6.1.zip
+          --repo "$GITHUB_REPOSITORY"
+          --title "DevilutionX PSP v1.6.1"
+          --notes-file Packaging/psp/RELEASE-NOTES-v1.6.1.md
+          --latest
+          --verify-tag

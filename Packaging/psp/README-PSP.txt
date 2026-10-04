@@ -1,4 +1,4 @@
-DevilutionX PSP v1.6.0
+DevilutionX PSP v1.6.1
 =====================
 
 Extract this ZIP into ms0:/PSP/GAME/DevilutionX/ on your PSP Memory Stick
@@ -39,5 +39,6 @@ No Diablo, Hellfire, or shareware MPQ data is included in this download.
 Graphics offers 640x480 (4:3) and 848x480 (Widescreen) logical resolutions.
 The widescreen mode shows a wider view without stretching a 4:3 frame.
 
-This release uses the normal PSP build #56 from upstream-psp commit 0643e7092.
+This documentation update uses the same normal PSP build #56 EBOOT from
+upstream-psp commit 0643e7092 as v1.6.0. No game code changed in v1.6.1.
 The older v1.5.1 release was built from the separate psp-enhanced branch.
