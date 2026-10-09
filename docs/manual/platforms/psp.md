@@ -2,7 +2,7 @@
 
 ## Installation
 
-1. Download and unzip [devilutionx-psp.zip](https://github.com/diasurgical/devilutionX/releases/latest/download/devilutionx-psp.zip).
+1. Download and unzip the PSP ZIP from the [latest release of this fork](https://github.com/Hahnter/DevilutionX-PSP-Resurrected/releases/latest).
 2. Copy `EBOOT.PBP` and the `assets` and `mods` folders to `PSP/GAME/DevilutionX/` on the Memory Stick.
 3. Copy `DIABDAT.MPQ` from your CD (or GoG install folder) to `PSP/GAME/DevilutionX/`.
    For Hellfire, also copy `hellfire.mpq`, `hfmonk.mpq`, `hfmusic.mpq`, and `hfvoice.mpq`.
