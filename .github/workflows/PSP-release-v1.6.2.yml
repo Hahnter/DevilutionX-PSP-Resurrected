@@ -20,13 +20,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          test "$(gh run view 37880067337 --repo "$GITHUB_REPOSITORY" --json headSha --jq .headSha)" = "79b3ef41782b73a19702e86b7d2bc6935d96c229"
-          test "$(gh run view 37880067337 --repo "$GITHUB_REPOSITORY" --json conclusion --jq .conclusion)" = "success"
+          test "$(gh run view 37880312834 --repo "$GITHUB_REPOSITORY" --json headSha --jq .headSha)" = "d06db78e18db9aa4196d62f98cc680d664ac7d49"
+          test "$(gh run view 37880312834 --repo "$GITHUB_REPOSITORY" --json conclusion --jq .conclusion)" = "success"
 
       - name: Download updated PSP build
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh run download 37880067337 --repo "$GITHUB_REPOSITORY" --name devilutionx-psp --dir artifact
+        run: gh run download 37880312834 --repo "$GITHUB_REPOSITORY" --name devilutionx-psp --dir artifact
 
       - name: Package and verify PSP download
         run: python3 Packaging/psp/package_release.py artifact devilutionx-psp-v1.6.2.zip
