@@ -6,13 +6,11 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
 
-EXPECTED_EBOOT_SHA256 = "50b3b12ddd2e69da4ecbba7bf116074116cdd388becea0e87268bacb79ed3130"
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("artifact_dir", type=Path)
     parser.add_argument("output_zip", type=Path)
+    parser.add_argument("--expected-eboot-sha256", help="Expected SHA-256 for this build's EBOOT")
     arguments = parser.parse_args()
 
     root = arguments.artifact_dir
@@ -31,8 +29,8 @@ def main():
     if eboot[:4] != bytes((0, 80, 66, 80)):
         raise SystemExit("Invalid EBOOT.PBP header")
     digest = hashlib.sha256(eboot).hexdigest()
-    if digest != EXPECTED_EBOOT_SHA256:
-        raise SystemExit(f"EBOOT hash differs from uploaded build #56: {digest}")
+    if arguments.expected_eboot_sha256 and digest != arguments.expected_eboot_sha256.lower():
+        raise SystemExit(f"EBOOT hash differs from expected build: {digest}")
 
     instructions = Path(__file__).with_name("README-PSP.txt")
     with ZipFile(arguments.output_zip, "w", compression=ZIP_DEFLATED, compresslevel=6) as archive:
