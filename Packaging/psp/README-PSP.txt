@@ -34,6 +34,11 @@ with WAV audio but powered off the PSP when the audio was changed to MP3.
 This points to a PSP-port MP3 audio compatibility issue. There is no evidence
 that the official DevilutionX download is damaged or unusable elsewhere.
 
+ARK-5 users: set Extra RAM (high memory) to Force Max in the ARK-5
+settings before playing. With extra RAM off, the game runs out of memory
+and crashes on the loading screen after you pick a character. Force 16
+may also be enough. Leave it off for retail games that use cheat plugins.
+
 No Diablo, Hellfire, or shareware MPQ data is included in this download.
 
 Graphics offers 640x480 (4:3) and 848x480 (Widescreen) logical resolutions.
